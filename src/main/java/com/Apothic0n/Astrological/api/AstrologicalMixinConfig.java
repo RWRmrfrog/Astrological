@@ -1,5 +1,6 @@
 package com.Apothic0n.Astrological.api;
 
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -18,6 +19,9 @@ public class AstrologicalMixinConfig implements IMixinConfigPlugin {
      */
     @Override
     public void onLoad(String mixinPackage) {
+        // ADDED: Initialize MixinExtras before mixins are applied
+        MixinExtrasBootstrap.init();
+
         try {
             AstrologicalJsonReader.makeAndReadClientConfig(Path.of(FMLPaths.CONFIGDIR.get().toString() + "/astrol-client.json"));
         } catch (IOException e) {
