@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pointed_dripstone",
   "textures": {
-    "cross": "astrological:block/crying_duct_down_base"
+    "cross": "astrological:block/crying_duct_up_tip_merge"
   }
 }
