@@ -36,6 +36,7 @@
           0
         ],
         "blocks": [
+          "minecraft:end_stone",
           "astrological:purpurite"
         ]
       },
