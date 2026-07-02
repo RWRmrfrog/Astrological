@@ -1,21 +1,14 @@
 package com.Apothic0n.Astrological.mixin;
 
 import com.Apothic0n.Astrological.core.objects.AstrologicalBlocks;
-import com.llamalad7.mixinextras.expression.Definition;
-import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChorusPlantBlock;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ChorusPlantBlock.class)
@@ -25,52 +18,52 @@ public abstract class ChorusPlantBlockMixin extends PipeBlock {
         super(p_55159_, p_55160_);
     }
 
-    @Definition(id = "blockstate", local = @Local(type = BlockState.class, ordinal = 1))
-    @Definition(id = "blockstate1", local = @Local(type = BlockState.class, ordinal = 2))
-    @Definition(id = "blockstate2", local = @Local(type = BlockState.class, ordinal = 3))
-    @Definition(id = "blockstate3", local = @Local(type = BlockState.class, ordinal = 4))
-    @Definition(id = "blockstate4", local = @Local(type = BlockState.class, ordinal = 5))
-    @Definition(id = "blockstate5", local = @Local(type = BlockState.class, ordinal = 6))
-    @Definition(id = "is", method = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
-    @Definition(id = "CHORUS_FLOWER", field = "Lnet/minecraft/world/level/block/Blocks;CHORUS_FLOWER:Lnet/minecraft/world/level/block/Block;")
-    @Expression(value = "blockstate.is(CHORUS_FLOWER)", id = "state1")
-    @Expression(value = "blockstate1.is(CHORUS_FLOWER)", id = "state2")
-    @Expression(value = "blockstate2.is(CHORUS_FLOWER)", id = "state3")
-    @Expression(value = "blockstate3.is(CHORUS_FLOWER)", id = "state4")
-    @Expression(value = "blockstate4.is(CHORUS_FLOWER)", id = "state5")
-    @Expression(value = "blockstate5.is(CHORUS_FLOWER)", id = "state6")
-    @WrapOperation(method = "getStateWithConnections", at = {
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state1"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state2"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state3"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state4"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state5"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state6"),
-    })
+    /**
+     * @author Apothicon
+     * @reason Allows chorus plants to visually connect to chorus flowers sitting on purpurite.
+     *
+     * Wraps every BlockState.is(Block) call inside getStateWithConnections (originally 6 separate
+     * @Expression matches, one per connection direction). Since we only act when the checked block
+     * is CHORUS_FLOWER, a single unrestricted @At (no ordinal) covers all of them.
+     */
+    @WrapOperation(
+            method = "getStateWithConnections",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
+    )
     private static boolean allowChorusPlantConnectToPurpurite(BlockState instance, Block block, Operation<Boolean> original) {
-        return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE.get());
+        if (block == Blocks.CHORUS_FLOWER) {
+            return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE.get());
+        }
+        return original.call(instance, block);
     }
 
-    @Definition(id = "state", local = @Local(type = BlockState.class, ordinal = 1, argsOnly = true))
-    @Definition(id = "is", method = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
-    @Definition(id = "END_STONE", field = "Lnet/minecraft/world/level/block/Blocks;END_STONE:Lnet/minecraft/world/level/block/Block;")
-    @Expression("state.is(END_STONE)")
-    @WrapOperation(method = "updateShape", at = @At("MIXINEXTRAS:EXPRESSION"))
+    /**
+     * @author Apothicon
+     * @reason Allows chorus plants to keep their shape/connection state when updated on purpurite.
+     */
+    @WrapOperation(
+            method = "updateShape",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
+    )
     public boolean allowChorusPlantUpdateShapeConnectToPurpurite(BlockState instance, Block block, Operation<Boolean> original) {
-        return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE);
+        if (block == Blocks.END_STONE) {
+            return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE);
+        }
+        return original.call(instance, block);
     }
 
-    @Definition(id = "blockstate", local = @Local(type = BlockState.class, ordinal = 1))
-    @Definition(id = "blockstate2", local = @Local(type = BlockState.class, ordinal = 3))
-    @Definition(id = "is", method = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
-    @Definition(id = "END_STONE", field = "Lnet/minecraft/world/level/block/Blocks;END_STONE:Lnet/minecraft/world/level/block/Block;")
-    @Expression(value = "blockstate2.is(END_STONE)", id = "state1")
-    @Expression(value = "blockstate.is(END_STONE)", id = "state2")
-    @WrapOperation(method = "canSurvive", at = {
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state1"),
-        @At(value = "MIXINEXTRAS:EXPRESSION", id = "state2")
-    })
+    /**
+     * @author Apothicon
+     * @reason Allows chorus plants to survive on purpurite.
+     */
+    @WrapOperation(
+            method = "canSurvive",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z")
+    )
     public boolean allowChorusPlantSurviveOnPurpurite(BlockState instance, Block block, Operation<Boolean> original) {
-        return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE.get());
+        if (block == Blocks.END_STONE) {
+            return original.call(instance, block) || instance.is(AstrologicalBlocks.PURPURITE.get());
+        }
+        return original.call(instance, block);
     }
 }
