@@ -10,7 +10,7 @@ Expanding the end!
 
 # ====== Kilt Fork for 1.21.1 ======
 
-- Rewrites minixins for better compatibility
+- Rewrites mixins for better compatibility
 
 - Removed end sun and saturn for shader compatability (they kinda looked bad imo sorry)
 
