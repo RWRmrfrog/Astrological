@@ -17,8 +17,7 @@
   ],
   "client": [
     "DimensionTypeMixin",
-    "EndEffectsMixin",
-    "LevelRendererMixin"
+    "EndEffectsMixin"
   ],
   "server": [
   ],

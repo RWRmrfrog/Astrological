@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "astrological:block/crying_duct_tip"
+    "layer0": "astrological:block/crying_duct/crying_duct_tip"
   },
   "display": {
     "thirdperson_righthand": {
